@@ -48,12 +48,15 @@ The app demonstrates proficiency in React, React Router, Tailwind CSS, and handl
    git clone https://github.com/yourusername/expressit-store-checker.git
    cd expressit-store-checker
 2. Install dependencies:
-   ```npm install
+   ```
+   npm install
 3. Run the development server:
-   ```npm run dev
+   ```
+   npm run dev
 4. Open your browser at http://localhost:5173
 
 ## Folder Structure
+```
 src/
 ├── components/       # Reusable UI components
 ├── pages/            # Route components like StoreForm, Products, ProductDetail
