@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,8 +14,10 @@ const Products = () => {
         const res = await fetch("https://glore-bd-backend-node-mongo.vercel.app/api/product");
         const data = await res.json();
         setProducts(data.data || []);
+        setError(false);
       } catch (error) {
         console.error("❌ Failed to load products:", error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -27,38 +30,52 @@ const Products = () => {
     return <p className="text-center text-lg mt-10">🔄 Loading products...</p>;
   }
 
+  if (error) {
+    return <p className="text-center text-red-500 mt-10">❌ Failed to load products. Please try again later.</p>;
+  }
+
   return (
     <div className="p-4 sm:p-6 md:p-10">
       <h1 className="text-3xl font-bold mb-8 text-center">🛍️ Our Products</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <div
-            key={product._id}
-            onClick={() => navigate(`/products/${product._id}`, { state: { product } })}
-            className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden"
-          >
-            <img
-              src={product.images?.[0] || "https://via.placeholder.com/300"}
-              alt={product.name || "Product Image"}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-lg font-semibold truncate">{product.name || "Unnamed Product"}</h2>
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {product.description || "No description available."}
-              </p>
-              <p className="mt-2 text-sm text-blue-500 font-medium">
-                {product.category?.name || "Uncategorized"}
-              </p>
+        {products.map((product) => {
+          console.log(product); // 🔍 Inspect the category structure here
+
+          // Determine the category display:
+          const category = typeof product.category === "string"
+            ? product.category
+            : product.category?.name || "Uncategorized";
+
+          return (
+            <div
+              key={product._id}
+              onClick={() => navigate(`/products/${product._id}`, { state: { product } })}
+              className="cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden"
+            >
+              <img
+                src={product.images?.[0] || "https://via.placeholder.com/300"}
+                alt={product.name || "Product Image"}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="text-lg font-semibold truncate">{product.name || "Unnamed Product"}</h2>
+                <p className="text-sm text-gray-600 line-clamp-2">
+                  {product.description || "No description available."}
+                </p>
+                <p className="mt-2 text-sm text-blue-500 font-medium">
+                  {category}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export default Products;
+
 /*import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
