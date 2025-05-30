@@ -12,9 +12,9 @@ const Products = () => {
       try {
         const res = await fetch("https://glore-bd-backend-node-mongo.vercel.app/api/product");
         const data = await res.json();
-        setProducts(data.data);
+        setProducts(data.data || []);
       } catch (error) {
-        console.error("Failed to load products", error);
+        console.error("❌ Failed to load products:", error);
       } finally {
         setLoading(false);
       }
@@ -23,11 +23,13 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  if (loading) return <p className="text-center text-lg mt-10">Loading products...</p>;
+  if (loading) {
+    return <p className="text-center text-lg mt-10">🔄 Loading products...</p>;
+  }
 
   return (
     <div className="p-4 sm:p-6 md:p-10">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">Our Products</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">🛍️ Our Products</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
           <div
@@ -37,13 +39,17 @@ const Products = () => {
           >
             <img
               src={product.images?.[0] || "https://via.placeholder.com/300"}
-              alt={product.name}
+              alt={product.name || "Product Image"}
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
-              <h2 className="text-lg font-semibold">{product.name}</h2>
-              <p className="text-sm text-gray-600">{product.description}</p>
-              <p className="mt-2 text-sm text-gray-400">{product.category?.name || "Uncategorized"}</p>
+              <h2 className="text-lg font-semibold truncate">{product.name || "Unnamed Product"}</h2>
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {product.description || "No description available."}
+              </p>
+              <p className="mt-2 text-sm text-blue-500 font-medium">
+                {product.category?.name || "Uncategorized"}
+              </p>
             </div>
           </div>
         ))}
